@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shivam TechSide - QR Code Generator </title>
+    <style>
+        :root {
+            --accent1: #4f46e5;
+            --accent2: #7e22ce;
+            --text: #1f2937;
+            --bg: #f8fafc;
+            --card-bg: rgba(255, 255, 255, 0.8);
+            --error: #ef4444;
+            --success: #22c55e;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--accent1), var(--accent2));
+            padding: 20px;
+            color: var(--text);
+            transition: background 0.5s ease;
+        }
+
+        .container {
+            display: flex;
+            width: 900px;
+            max-width: 100%;
+            min-height: 550px;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .hero {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            position: relative;
+        }
+
+        .hero-content {
+            text-align: center;
+            z-index: 1;
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .loader {
+            display: flex;
+            margin-top: 40px;
+            gap: 8px;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: white;
+            animation: bounce 1.5s infinite ease-in-out;
+        }
+
+        .dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-15px);
+            }
+        }
+
+        .auth-card {
+            flex: 1;
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .view {
+            display: none;
+        }
+
+        .view.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h2 {
+            margin-bottom: 10px;
+            color: var(--accent1);
+        }
+
+        .subtitle {
+            margin-bottom: 30px;
+            opacity: 0.7;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 12px;
+            top: 12px;
+            color: var(--accent1);
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 12px 12px 40px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--accent1);
+            box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 12px;
+            top: 12px;
+            cursor: pointer;
+            color: #64748b;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(to right, var(--accent1), var(--accent2));
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .link-text {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .link-text a {
+            color: var(--accent1);
+            text-decoration: none;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .link-text a:hover {
+            text-decoration: underline;
+        }
+
+        .otp-container {
+            display: flex;
+            gap: 15px;
+            margin: 20px 0;
+            justify-content: center;
+        }
+
+        .otp-input {
+            width: 50px !important;
+            height: 50px;
+            text-align: center;
+            font-size: 24px;
+            padding: 0;
+        }
+
+        .theme-controls {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .color-swatch {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid white;
+            transition: transform 0.2s ease;
+        }
+
+        .color-swatch:hover {
+            transform: scale(1.1);
+        }
+
+        .randomize-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 5px 10px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .randomize-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            border-radius: 8px;
+            color: white;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .toast.success {
+            background: var(--success);
+        }
+
+        .toast.error {
+            background: var(--error);
+        }
+
+        .dashboard {
+            text-align: center;
+        }
+
+        .user-info {
+            margin: 20px 0;
+            padding: 20px;
+            background: rgba(79, 70, 229, 0.1);
+            border-radius: 8px;
+        }
+
+        .masked-email {
+            font-weight: 500;
+            color: var(--accent1);
+        }
+
+        .generate-password {
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid var(--success);
+            color: var(--success);
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-left: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .generate-password:hover {
+            background: rgba(34, 197, 94, 0.2);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                min-height: auto;
+            }
+
+            .hero {
+                display: none;
+            }
+
+            .auth-card {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+
+</head>
+
+<body>
+    <div class="container">
+        <!-- Left Hero Section -->
+        <div class="hero">
+            <div class="hero-content">
+            <h1>Secure Your Access with Shivam TechSide</h1>
+            <p>Experience next-level security with our QR code authentication. Sign up effortlessly and protect your account with
+                our advanced security features.</p>
+
+                <div class="loader">
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                </div>
+            </div>
+
+            <!-- Theme Controls -->
+            <div class="theme-controls">
+                <div class="color-swatch" style="background: #4f46e5;" onclick="setTheme('#4f46e5', '#7e22ce')"></div>
+                <div class="color-swatch" style="background: #059669;" onclick="setTheme('#059669', '#0d9488')"></div>
+                <div class="color-swatch" style="background: #dc2626;" onclick="setTheme('#dc2626', '#ea580c')"></div>
+                <div class="color-swatch" style="background: #3730a3;" onclick="setTheme('#3730a3', '#7e22ce')"></div>
+                <button class="randomize-btn" onclick="randomizeTheme()">Random</button>
+            </div>
+        </div>
+
+        <!-- Right Auth Card -->
+        <div class="auth-card">
+            <!-- Signup View -->
+            <div class="view active" id="signup-view">
+                <h2>Create Account</h2>
+                <p class="subtitle">Get started with your free account</p>
+
+                <form id="signup-form">
+                    <div class="form-group">
+                        <span class="input-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                        </span>
+                        <input type="text" id="fullname" placeholder="Full Name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <span class="input-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+                            </svg>
+                        </span>
+                        <input type="email" id="email" placeholder="Email Address" required>
+                        <div id="email-hint" style="margin-top:8px;font-size:12px;color:#64748b;"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <span class="input-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                            </svg>
+                        </span>
+                        <input type="password" id="password" placeholder="Password" required>
+                        <span class="password-toggle" onclick="togglePassword('password')">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                        </span>
+                        <button type="button" class="generate-password" onclick="generatePassword('password')">Generate
+                            Random Password</button>
+                        <div id="password-strength" style="margin-top:8px;font-size:12px;color:#64748b;"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <span class="input-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                            </svg>
+                        </span>
+                        <input type="password" id="confirm-password" placeholder="Confirm Password" required>
+                        <span class="password-toggle" onclick="togglePassword('confirm-password')">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                        </span>
+                        <div id="password-match" style="margin-top:8px;font-size:12px;color:#64748b;"></div>
+                    </div>
+
+                    <button type="submit" class="btn">Sign Up</button>
+                </form>
+
+                <p class="link-text">Already have an account? <a onclick="showView('login-view')">Log In</a></p>
+            </div>
+
+            <!-- Login View -->
+            <div class="view" id="login-view">
+                <h2>Welcome Back</h2>
+                <p class="subtitle">Sign in to your account</p>
+
+                <form id="login-form">
+                    <div class="form-group">
+                        <span class="input-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+                            </svg>
+                        </span>
+                        <input type="email" id="login-email" placeholder="Email Address" required>
+                    </div>
+
+                    <div class="form-group">
+                        <span class="input-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                            </svg>
+                        </span>
+                        <input type="password" id="login-password" placeholder="Password" required>
+                        <span class="password-toggle" onclick="togglePassword('login-password')">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                        </span>
+                    </div>
+
+                    <button type="submit" class="btn">Log In</button>
+                </form>
+
+                <p class="link-text">Don't have an account? <a onclick="showView('signup-view')">Sign Up</a></p>
+            </div>
+
+            <!-- OTP View -->
+            <div class="view" id="otp-view">
+                <h2>Verify Your Identity</h2>
+                <p class="subtitle">Enter the 6-digit code sent to <span id="masked-email" class="masked-email"></span>
+                </p>
+
+                <form id="otp-form">
+                    <div class="otp-container">
+                        <input type="text" class="otp-input" maxlength="1" required>
+                        <input type="text" class="otp-input" maxlength="1" required>
+                        <input type="text" class="otp-input" maxlength="1" required>
+                        <input type="text" class="otp-input" maxlength="1" required>
+                        <input type="text" class="otp-input" maxlength="1" required>
+                        <input type="text" class="otp-input" maxlength="1" required>
+                    </div>
+
+                    <button type="submit" class="btn">Verify</button>
+                </form>
+
+                <p class="link-text">Didn't receive the code? <a id="resend-link" onclick="resendOTP()">Resend</a></p>
+            </div>
+
+            <!-- Dashboard View -->
+            <div class="view" id="dashboard-view">
+                <h2>Welcome to Your Dashboard</h2>
+                <p class="subtitle">You have successfully authenticated</p>
+
+                <div class="user-info">
+                    <p>Welcome, <span id="user-name"></span>!</p>
+                    <p>Email: <span id="user-email"></span></p>
+                </div>
+
+                <button class="btn" onclick="logout()">Log Out</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
+
+    <!-- EmailJS SDK -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
+    <script>
+        // Replace these with your actual EmailJS values (from dashboard)
+        emailjs.init({ publicKey: "tHmrF9QvdLU2bdc1D" }); // Public key
+
+        // DOM Elements
+        const views = document.querySelectorAll('.view');
+        const signupForm = document.getElementById('signup-form');
+        const loginForm = document.getElementById('login-form');
+        const otpForm = document.getElementById('otp-form');
+        const maskedEmailEl = document.getElementById('masked-email');
+        const userNameEl = document.getElementById('user-name');
+        const userEmailEl = document.getElementById('user-email');
+        const toast = document.getElementById('toast');
+        const otpInputs = document.querySelectorAll('.otp-input');
+        const resendLink = document.getElementById('resend-link');
+
+        // Current user email for OTP flow
+        let currentUserEmail = '';
+        let lastResendTime = 0; // For cooldown
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function () {
+            // Check if user is already logged in
+            const currentUser = localStorage.getItem('currentUser');
+            if (currentUser) {
+                showDashboard(JSON.parse(currentUser));
+            }
+
+            // Set up form event listeners
+            setupFormListeners();
+
+            // Set up OTP input behavior
+            setupOTPInputs();
+        });
+
+        // Set up form submission handlers
+        function setupFormListeners() {
+            // Signup form submission
+            signupForm.addEventListener('submit', function (e) {
+                e.preventDefault();
+                handleSignup();
+            });
+
+            // Live email exists hint
+            const emailInput = document.getElementById('email');
+            const emailHint = document.getElementById('email-hint');
+            emailInput.addEventListener('input', () => {
+                const email = emailInput.value.trim();
+                if (!email) { emailHint.textContent = ''; return; }
+                const users = JSON.parse(localStorage.getItem('users') || '[]');
+                const exists = users.some(u => u.email === email);
+                emailHint.style.color = exists ? '#ef4444' : '#22c55e';
+                emailHint.textContent = exists ? 'Email already registered. Try logging in.' : 'Email available.';
+            });
+
+            // Login form submission
+            loginForm.addEventListener('submit', function (e) {
+                e.preventDefault();
+                handleLogin();
+            });
+
+            // OTP form submission
+            otpForm.addEventListener('submit', function (e) {
+                e.preventDefault();
+                handleOTPVerification();
+            });
+        }
+
+        // Set up OTP input navigation
+        function setupOTPInputs() {
+            otpInputs.forEach((input, index) => {
+                input.addEventListener('input', () => {
+                    if (input.value && index < otpInputs.length - 1) {
+                        otpInputs[index + 1].focus();
+                    }
+
+                    // Auto-submit when all 6 digits filled
+                    const code = Array.from(otpInputs).map(i => i.value).join('');
+                    if (code.length === otpInputs.length && /^[0-9]{6}$/.test(code)) {
+                        handleOTPVerification();
+                    }
+                });
+
+                input.addEventListener('keydown', (e) => {
+                    if (e.key === 'Backspace' && !input.value && index > 0) {
+                        otpInputs[index - 1].focus();
+                    }
+                });
+            });
+
+            // Paste support: paste entire OTP into first box
+            otpInputs[0].addEventListener('paste', (e) => {
+                const pasted = (e.clipboardData || window.clipboardData).getData('text');
+                if (/^[0-9]{6}$/.test(pasted)) {
+                    e.preventDefault();
+                    for (let i = 0; i < otpInputs.length; i++) {
+                        otpInputs[i].value = pasted[i] || '';
+                    }
+                    handleOTPVerification();
+                }
+            });
+        }
+
+        // Random Password Generator
+        function generatePassword(inputId, length = 12) {
+            const uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            const lowercase = 'abcdefghijklmnopqrstuvwxyz';
+            const numbers = '0123456789';
+            const symbols = '!@#$%^&*()_+-=[]{}|;:,.<>?';
+
+            let password = '';
+            // Ensure at least one of each type
+            password += uppercase[Math.floor(Math.random() * uppercase.length)];
+            password += lowercase[Math.floor(Math.random() * lowercase.length)];
+            password += numbers[Math.floor(Math.random() * numbers.length)];
+            password += symbols[Math.floor(Math.random() * symbols.length)];
+
+            // Fill the rest
+            const allChars = uppercase + lowercase + numbers + symbols;
+            for (let i = 4; i < length; i++) {
+                password += allChars[Math.floor(Math.random() * allChars.length)];
+            }
+
+            // Shuffle
+            password = password.split('').sort(() => Math.random() - 0.5).join('');
+
+            const input = document.getElementById(inputId);
+            input.value = password;
+            showToast('Random password generated! Copy it securely.', 'success');
+        }
+
+        // Live password strength indicator
+        const passwordInput = document.getElementById('password');
+        const passwordStrengthEl = document.getElementById('password-strength');
+        function getPasswordStrengthDetails(pwd) {
+            let score = 0;
+            if (pwd.length >= 8) score++;
+            if (/[A-Z]/.test(pwd)) score++;
+            if (/[a-z]/.test(pwd)) score++;
+            if (/[0-9]/.test(pwd)) score++;
+            if (/[^A-Za-z0-9]/.test(pwd)) score++;
+            const levels = ['Very Weak', 'Weak', 'Fair', 'Good', 'Strong'];
+            const colors = ['#ef4444', '#f97316', '#eab308', '#22c55e', '#16a34a'];
+            const idx = Math.min(score, 5) - 1;
+            return { label: idx >= 0 ? levels[idx] : 'Very Weak', color: idx >= 0 ? colors[idx] : '#ef4444' };
+        }
+        passwordInput.addEventListener('input', () => {
+            const { label, color } = getPasswordStrengthDetails(passwordInput.value);
+            passwordStrengthEl.textContent = passwordInput.value ? `Password strength: ${label}` : '';
+            passwordStrengthEl.style.color = color;
+        });
+
+        // Handle user signup
+        function handleSignup() {
+            const fullname = document.getElementById('fullname').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+
+            if (!fullname) {
+                showToast('Full name is required', 'error');
+                return;
+            }
+
+            // Validate passwords match
+            if (password !== confirmPassword) {
+                showToast('Passwords do not match', 'error');
+                return;
+            }
+
+            // Password strength check
+            if (password.length < 8) {
+                showToast('Password must be at least 8 characters long', 'error');
+                return;
+            }
+
+            // Check if user already exists
+            const users = JSON.parse(localStorage.getItem('users') || '[]');
+            const existingUser = users.find(user => user.email === email);
+
+            if (existingUser) {
+                showToast('User with this email already exists', 'error');
+                return;
+            }
+
+            // Store user (in a real app, hash the password server-side)
+            users.push({ fullname, email, password });
+            localStorage.setItem('users', JSON.stringify(users));
+
+            // Prefill login email and switch to login view
+            document.getElementById('login-email').value = email;
+            showView('login-view');
+            showToast('Account created successfully! Please log in.', 'success');
+        }
+
+        // Live password match indicator
+        const confirmPasswordInput = document.getElementById('confirm-password');
+        const passwordMatchEl = document.getElementById('password-match');
+        function updatePasswordMatch() {
+            const pwd = document.getElementById('password').value;
+            const cpwd = confirmPasswordInput.value;
+            if (!cpwd) { passwordMatchEl.textContent = ''; return; }
+            const match = pwd === cpwd;
+            passwordMatchEl.style.color = match ? '#22c55e' : '#ef4444';
+            passwordMatchEl.textContent = match ? 'Passwords match' : 'Passwords do not match';
+        }
+        confirmPasswordInput.addEventListener('input', updatePasswordMatch);
+        document.getElementById('password').addEventListener('input', updatePasswordMatch);
+
+        // Handle user login
+        function handleLogin() {
+            const email = document.getElementById('login-email').value.trim();
+            const password = document.getElementById('login-password').value;
+
+            // Check if user exists and password matches
+            const users = JSON.parse(localStorage.getItem('users') || '[]');
+            const user = users.find(user => user.email === email && user.password === password);
+
+            if (!user) {
+                showToast('Invalid email or password', 'error');
+                return;
+            }
+
+            // Store current user session
+            localStorage.setItem('currentUser', JSON.stringify(user));
+
+            // Show success and proceed to OTP
+            showToast('Login successful! Sending OTP...', 'success');
+
+            // Set current user email for OTP flow
+            currentUserEmail = email;
+
+            // Generate and send OTP after a short delay
+            setTimeout(() => {
+                generateAndSendOTP();
+                showView('otp-view');
+
+                // Mask email for display
+                const maskedEmail = maskEmail(email);
+                maskedEmailEl.textContent = maskedEmail;
+            }, 1500);
+        }
+
+        // Generate and send OTP using EmailJS
+        async function generateAndSendOTP() {
+            // Generate a 6-digit OTP
+            const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+            // Store OTP in sessionStorage for verification
+            sessionStorage.setItem('otp', otp);
+
+            // Prepare params for EmailJS
+            if (!currentUserEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(currentUserEmail)) {
+                showToast('Cannot send OTP: invalid or empty email.', 'error');
+                return;
+            }
+
+            let userNameForEmail = currentUserEmail.split('@')[0];
+            try {
+                const users = JSON.parse(localStorage.getItem('users') || '[]');
+                const user = users.find(u => u.email === currentUserEmail);
+                if (user && user.fullname) userNameForEmail = user.fullname;
+            } catch (_) { }
+
+            const params = {
+                // Common recipient keys, one of these must match your template variables
+                to_email: currentUserEmail,
+                to: currentUserEmail,
+                user_email: currentUserEmail,
+                email: currentUserEmail,
+                recipient: currentUserEmail,
+                // Other typical fields
+                to_name: userNameForEmail,
+                user_name: userNameForEmail,
+                otp_code: otp
+            };
+
+            const serviceId = "service_7b3i6w6"; // e.g., "service_c784xhz"
+            const templateId = "template_8fmid6w"; // e.g., "template_abc123"
+
+            try {
+                await emailjs.send(serviceId, templateId, params);
+                console.log(`OTP sent successfully to ${currentUserEmail}: ${otp}`);
+                showToast(`OTP sent to ${maskEmail(currentUserEmail)}`, 'success');
+            } catch (error) {
+                console.error('Failed to send OTP:', error, { params });
+                if (error && error.status === 422) {
+                    showToast('Email service rejected data. Verify template variable names for recipient.', 'error');
+                } else {
+                    showToast('Failed to send OTP. Check console for details or EmailJS setup.', 'error');
+                }
+            }
+        }
+
+        // Handle OTP verification
+        function handleOTPVerification() {
+            // Get entered OTP
+            const enteredOTP = Array.from(otpInputs).map(input => input.value).join('');
+
+            // Get stored OTP
+            const storedOTP = sessionStorage.getItem('otp');
+
+            // Verify OTP
+            if (enteredOTP === storedOTP) {
+                showToast('Verification successful! Redirecting...', 'success');
+                // On success, clear OTP and redirect to index.html
+                setTimeout(() => {
+                    sessionStorage.removeItem('otp');
+                    window.location.href = 'index.html';
+                }, 1000);
+            } else {
+                showToast('Invalid OTP. Please try again.', 'error');
+
+                // Clear OTP inputs
+                otpInputs.forEach(input => input.value = '');
+                otpInputs[0].focus();
+            }
+        }
+
+        // Resend OTP with cooldown
+        function resendOTP() {
+            const now = Date.now();
+            const cooldownMs = 30000;
+            if (now - lastResendTime < cooldownMs) {
+                showToast('Please wait before resending.', 'error');
+                return;
+            }
+            lastResendTime = now;
+
+            // Disable link and show countdown
+            let remaining = Math.ceil(cooldownMs / 1000);
+            const originalText = 'Resend';
+            resendLink.style.pointerEvents = 'none';
+            resendLink.style.opacity = '0.6';
+            const timer = setInterval(() => {
+                remaining--;
+                resendLink.textContent = `Resend (${remaining}s)`;
+                if (remaining <= 0) {
+                    clearInterval(timer);
+                    resendLink.textContent = originalText;
+                    resendLink.style.pointerEvents = '';
+                    resendLink.style.opacity = '';
+                }
+            }, 1000);
+            resendLink.textContent = `Resend (${remaining}s)`;
+
+            generateAndSendOTP();
+            showToast('New OTP sent to your email', 'success');
+
+            // Clear OTP inputs
+            otpInputs.forEach(input => input.value = '');
+            otpInputs[0].focus();
+        }
+
+        // Show dashboard with user info
+        function showDashboard(user) {
+            userNameEl.textContent = user.fullname;
+            userEmailEl.textContent = user.email;
+            showView('dashboard-view');
+        }
+
+        // Logout user
+        function logout() {
+            // Clear sessions
+            localStorage.removeItem('currentUser');
+            sessionStorage.removeItem('otp');
+
+            // Reset forms
+            signupForm.reset();
+            loginForm.reset();
+            otpForm.reset();
+
+            // Return to login view
+            showView('login-view');
+            showToast('You have been logged out', 'success');
+        }
+
+        // Show a specific view
+        function showView(viewId) {
+            views.forEach(view => {
+                view.classList.remove('active');
+            });
+            document.getElementById(viewId).classList.add('active');
+        }
+
+        // Toggle password visibility
+        function togglePassword(inputId) {
+            const input = document.getElementById(inputId);
+            const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+            input.setAttribute('type', type);
+        }
+
+        // Mask email for privacy (e.g., j***@example.com)
+        function maskEmail(email) {
+            const [name, domain] = email.split('@');
+            const maskedName = name[0] + '*'.repeat(Math.max(0, name.length - 2)) + (name.length > 1 ? name[name.length - 1] : '');
+            return `${maskedName}@${domain}`;
+        }
+
+        // Show toast notification
+        function showToast(message, type) {
+            toast.textContent = message;
+            toast.className = `toast ${type} show`;
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Set theme colors
+        function setTheme(accent1, accent2) {
+            document.documentElement.style.setProperty('--accent1', accent1);
+            document.documentElement.style.setProperty('--accent2', accent2);
+        }
+
+        // Randomize theme colors
+        function randomizeTheme() {
+            const colors = [
+                ['#4f46e5', '#7e22ce'], // Indigo to Purple
+                ['#059669', '#0d9488'], // Green to Teal
+                ['#dc2626', '#ea580c'], // Red to Orange
+                ['#3730a3', '#7e22ce'], // Deep Indigo to Purple
+                ['#0ea5e9', '#06b6d4'], // Sky Blue to Cyan
+                ['#db2777', '#9333ea'], // Pink to Purple
+                ['#ff6b6b', '#f06595'], // Coral to Pink
+                ['#3b82f6', '#6366f1'], // Blue to Indigo
+                ['#22c55e', '#84cc16'], // Green to Lime
+                ['#facc15', '#f97316'], // Yellow to Orange
+                ['#ec4899', '#f43f5e'], // Pink to Red
+                ['#14b8a6', '#06b6d4'], // Teal to Cyan
+                ['#8b5cf6', '#6366f1'], // Violet to Indigo
+                ['#0f172a', '#1e293b'], // Navy to Slate (Dark Mode)
+                ['#ff512f', '#dd2476'], // Bright Orange to Pink
+                ['#00c6ff', '#0072ff'], // Light Blue to Deep Blue
+                ['#11998e', '#38ef7d'], // Emerald to Green
+                ['#ff9a9e', '#fad0c4'], // Soft Pink to Peach
+                ['#f12711', '#f5af19'], // Red to Golden
+                ['#a8ff78', '#78ffd6'], // Light Green to Aqua
+                ['#c31432', '#240b36'], // Red to Dark Purple
+                ['#fc466b', '#3f5efb'], // Pink to Blue Neon
+                ['#ee0979', '#ff6a00'], // Hot Pink to Orange
+                ['#f7971e', '#ffd200'], // Orange to Yellow Gold
+                ['#00b09b', '#96c93d'], // Teal to Lime Green
+                ['#654ea3', '#eaafc8'], // Deep Purple to Soft Pink
+                ['#ff4e50', '#f9d423'], // Red to Yellow
+                ['#00c3ff', '#ffff1c'], // Blue to Yellow
+                ['#f953c6', '#b91d73'], // Pink to Dark Purple
+                ['#43cea2', '#185a9d'], // Aqua to Deep Blue
+                ['#ffe259', '#ffa751'], // Yellow to Orange
+                ['#4facfe', '#00f2fe'], // Sky Blue to Cyan Glow
+                ['#30cfd0', '#330867'], // Cyan to Deep Indigo
+                ['#8e2de2', '#4a00e0'], // Violet to Deep Purple
+                ['#373b44', '#4286f4'], // Dark Gray to Blue
+                ['#00f260', '#0575e6'], // Green to Blue
+                ['#e65c00', '#f9d423'], // Orange to Yellow
+                ['#de6161', '#2657eb'], // Red to Blue
+                ['#2c3e50', '#fd746c'], // Dark Blue to Coral
+                ['#1f4037', '#99f2c8'], // Deep Green to Mint
+                ['#ff9966', '#ff5e62'] // Peach to Coral
+            ];
+
+            const randomColors = colors[Math.floor(Math.random() * colors.length)];
+            setTheme(randomColors[0], randomColors[1]);
+        }
+    </script>
+</body>
+
+</html>
